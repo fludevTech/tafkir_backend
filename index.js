@@ -21,7 +21,11 @@ app.use('/wilaya', wilayaRouter);
 app.use('/commands', commandeRouter);
 app.use('/categories', categorieRouter);
 app.use('/containers', containerRouter);
-app.use('/products', productsRouter)
+app.use('/products', productsRouter);
+  app.get('/', (req, res) => {
+        const responce = { statuscode: res.statusCode, message: 'Api Works' };
+        res.json(responce);
+    });
 mySqlPool.query('select 1').then(() => {
     console.log('mysql db connected elhamdolillah');
     app.listen(port, () => {
