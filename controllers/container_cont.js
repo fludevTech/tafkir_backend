@@ -16,11 +16,11 @@ const getContainer = async (req, res) => {
             `, [idCommande, idCategorie]);
         res.json({ success: true, statusCode: 200, data: commandeCategorie[0] })
     } catch (error) {
-         res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 };
 const getCategoriesInCommande = async (req, res) => {
@@ -36,11 +36,11 @@ const getCategoriesInCommande = async (req, res) => {
             `, [idCommande]);
         res.json({ success: true, statusCode: 200, data: commandeCategorie[0] })
     } catch (error) {
-          res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 };
 const getCategoriesNoInCommande = async (req, res) => {
@@ -56,25 +56,34 @@ const getCategoriesNoInCommande = async (req, res) => {
             `, [idCommande]);
         res.json({ success: true, statusCode: 200, data: commandeCategorie[0] })
     } catch (error) {
-       res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 };
 
 const addContainerProduct = async (req, res) => {
-    const { idCommande, idCategorie, idProduct, qteProduct, isConfirmed } = req.body;
+    const { idCommande, idCategorie, idProduct, qteProduct,note, isConfirmed } = req.body;
     try {
-        await db.query('insert into container (idCommande, idCategorie,idProduct,qteProduct,isConfirmed) VALUES (?,?,?,?,?)', [idCommande, idCategorie, idProduct, qteProduct, isConfirmed]);
-        res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
-    } catch (error) {
-          res.status(404).json({
+        const query = await db.query('insert into container (idCommande, idCategorie,idProduct,qteProduct,note,isConfirmed) VALUES (?,?,?,?,?,?)', [idCommande, idCategorie, idProduct, qteProduct,note, isConfirmed]);
+        if (query[0]['affectedRows'] > 0) {
+            res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
+        } else {
+            res.status(404).json({
                 success: false,
                 statusCode: 404,
-                message: '... خطأ في الإتصال'
+                message: 'خطأ في الإتصال'
             })
+        }
+
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 
 
@@ -82,40 +91,70 @@ const addContainerProduct = async (req, res) => {
 const updateQteProductContainer = async (req, res) => {
     const { idCommande, idCategorie, idProduct, qteProduct } = req.body;
     try {
-        await db.query('update container set qteProduct=?  where idCommande=? and idCategorie=? and idProduct=?', [qteProduct, idCommande, idCategorie, idProduct]);
-        res.status(200).json({ success: true, statusCode: 200, message: 'تم التحديث بنجاح' });
-    } catch (error) {
-         res.status(404).json({
+        const query = await db.query('update container set qteProduct=?  where idCommande=? and idCategorie=? and idProduct=?', [qteProduct, idCommande, idCategorie, idProduct]);
+
+        if (query[0]['affectedRows'] > 0) {
+            res.status(200).json({ success: true, statusCode: 200, message: 'تم التحديث بنجاح' });
+
+        } else {
+            res.status(404).json({
                 success: false,
                 statusCode: 404,
-                message: '... خطأ في الإتصال'
+                message: 'خطأ في الإتصال'
             })
+        }
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        });
     }
 };
 const updateConfirmedProduct = async (req, res) => {
     const { idCommande, idCategorie, idProduct, isConfirmed } = req.body;
     try {
-        await db.query('update container set isConfirmed=?  where idCommande=? and idCategorie=? and idProduct=?', [isConfirmed, idCommande, idCategorie, idProduct]);
-        res.status(200).json({ success: true, statusCode: 200, message: 'تم التجديث بنجاح' });
+      const query =   await db.query('update container set isConfirmed=?  where idCommande=? and idCategorie=? and idProduct=?', [isConfirmed, idCommande, idCategorie, idProduct]);
+
+  if (query[0]['affectedRows'] > 0) {
+      res.status(200).json({ success: true, statusCode: 200, message: 'تم التجديث بنجاح' });
+
+  }else{
+     res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message:'خطأ في الإتصال'
+        })
+  }
     } catch (error) {
-          res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 }
 const updateNoteContainer = async (req, res) => {
     const { idCommande, idCategorie, idProduct, note } = req.body;
     try {
-        await db.query('update container set note=?  where idCommande=? and idCategorie=? and idProduct=?', [note, idCommande, idCategorie, idProduct]);
-        res.status(200).json({ success: true, statusCode: 200, message: 'تم التحديث بنجاح' });
+      const query=   await db.query('update container set note=?  where idCommande=? and idCategorie=? and idProduct=?', [note, idCommande, idCategorie, idProduct]);
+   if (query[0]['affectedRows'] > 0) {
+    
+         res.status(200).json({ success: true, statusCode: 200, message: 'تم التحديث بنجاح' });
+ 
+   }else{
+    res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: 'خطأ في الإتصال'
+        })
+   }
     } catch (error) {
-         res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 };
 const deleteContainerProduct = async (req, res) => {
@@ -127,17 +166,17 @@ const deleteContainerProduct = async (req, res) => {
 
             return res.status(200).json({ success: true, statusCode: 200, message: 'تم الحذف بنجاح' });
         }
-        return    res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: 'خطأ في الإتصال'
-            })
+        return res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: 'خطأ في الإتصال'
+        })
     } catch (error) {
-         res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 }
 module.exports = { getCategoriesInCommande, getCategoriesNoInCommande, getContainer, updateNoteContainer, addContainerProduct, updateQteProductContainer, updateConfirmedProduct, deleteContainerProduct };
