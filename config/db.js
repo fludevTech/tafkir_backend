@@ -2,10 +2,10 @@ const mysql = require('mysql2/promise');
 
 
 const mySqlPool = mysql.createPool({
-    host:'shortline.proxy.rlwy.net',
-    port:'35969',
+    host:'ballast.proxy.rlwy.net',
+    port:'57027',
 user:'root',
-password:'ITcPAMdrgSfBgKpRJIyzhbIUmnvmeydn',
+password:'EwmnqMVbVRXhiCaDkoeftufhlMuruemU',
 database:'tafkir_db',
 });
 module.exports=mySqlPool;
