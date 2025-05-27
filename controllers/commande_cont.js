@@ -19,7 +19,7 @@ const getCommandsStore = async (req, res) => {
 const addCommande = async (req, res) => {
     const { idCommande, dateCommande, isCompleted, designationCommande, idStore, idUser } = req.body;
     try {
-        await db.query('insert into commande (idCommande,dateCommande,isCompleted,designationCommande,idStore,idUser) VALUES (?,?,?,?,?,?)', [idCommande, dateCommande, isCompleted, designationCommande, idStore, idUser]);
+      const query =   await db.query('insert into commande (idCommande,dateCommande,isCompleted,designationCommande,idStore,idUser) VALUES (?,?,?,?,?,?)', [idCommande, dateCommande, isCompleted, designationCommande, idStore, idUser]);
 
         if (query[0]['affectedRows'] > 0) {
             res.status(200).json({ success: true, statusCode: 200, message: 'تمت العملية بنجاح' });
