@@ -1,5 +1,6 @@
-const { text } = require('body-parser');
 const db = require('../config/db')
+
+const {hashPassword} = require('../utils/auth_utils')
 
 const getUsers = async (req, res) => {
 
@@ -12,16 +13,15 @@ const getUsers = async (req, res) => {
              on users.idRole = roles.idRole
              order by wilaya.labelWilaya ASC
              `
-
         );
-        // if (users[0].length == 0) {
-        //     return res.status(404).json({
-        //         success: false,
-        //         statusCode: 404,
-        //         message: 'No user exists',
+        if (users[0].length == 0) {
+            return res.status(404).json({
+                success: false,
+                statusCode: 404,
+                message: 'No user exists',
 
-        //     })
-        // }
+            })
+        }
         res.status(200).json({ success: true, statusCode: 200, data: users[0] })
     } catch (error) {
         res.status(404).json({
@@ -46,14 +46,14 @@ const userDetailes = async (req, res) => {
              where idUser=?
              `
             , [idUser]);
-        // if (user[0].length == 0) {
-        //     return res.status(404).json({
-        //         success: false,
-        //         statusCode: 404,
-        //         message: 'No user exists',
+        if (user[0].length == 0) {
+            return res.status(404).json({
+                success: false,
+                statusCode: 404,
+                message: 'No user exists',
 
-        //     })
-        // }
+            })
+        }
         res.status(200).json({ success: true, statusCode: 200, data: user[0] })
     } catch (error) {
         res.status(404).json({
@@ -68,21 +68,32 @@ const userDetailes = async (req, res) => {
 ///////
 const loginUser = async (req, res) => {
     const { emailUser, passwordUser } = req.body;
+
     try {
-        const user = await db.query(`select * from users 
+        const user = await db.query(`select * from users
             inner join roles
             on users.idRole = roles.idRole
-            where users.emailUser = ? and users.passwordUser=?
-            `, [emailUser, passwordUser]);
-
+            where users.emailUser = ?
+            `, [emailUser]);
         if (user[0].length == 0) {
-            return res.status(404).json({
+            res.status(404).json({
                 success: false,
                 statusCode: 404,
-                message: 'الإيميل أو كلمة المرور خاطئة'
+                message: 'لا يوجد حساب مسجل ب هاذا الإيميل'
             })
+        } else {
+            bcrypt.compare(passwordUser, user[0][0]['passwordUser'], (err, result) => {
+                if (result) {
+                    res.status(200).json({ statusCode: 200, data: user[0] })
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        statusCode: 404,
+                        message: 'كلمة المرور خاطئة'
+                    })
+                }
+            });
         }
-        return res.status(200).json({ statusCode: 200, data: user[0] })
     } catch (error) {
         res.status(404).json({
             success: false,
@@ -97,9 +108,11 @@ const loginUser = async (req, res) => {
 const addUser = async (req, res) => {
     const { idUser, emailUser, passwordUser, userName, isActive, idWilaya, idRole } = req.body;
     try {
-        const query = await db.query('insert into users (idUser,emailUser,passwordUser,UserName,isActive,idWilaya,idRole) VALUES (?,?,?,?,?,?,?)', [idUser, emailUser, passwordUser, userName, isActive, idWilaya, idRole]);
+        
+        const hashedPass= await hashPassword(passwordUser);
+        const query = await db.query('insert into users (idUser,emailUser,passwordUser,UserName,isActive,idWilaya,idRole) VALUES (?,?,?,?,?,?,?)', [idUser, emailUser, hashedPass, userName, isActive, idWilaya, idRole]);
         if (query[0]['affectedRows'] > 0) {
-            return res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
+             res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
 
         } else {
             res.status(404).json({
@@ -112,7 +125,7 @@ const addUser = async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(404).json({ success: false, statusCode: 404, error: 'Email already exists' });
         }
-        res.status(404).json({
+       return res.status(404).json({
             success: false,
             statusCode: 404,
             message: '... خطأ في الإتصال'
@@ -150,7 +163,9 @@ const updateUser = async (req, res) => {
 const updatePasswordUser = async (req, res) => {
     const { idUser, passwordUser } = req.body;
     try {
-        const query = await db.query('update users set passwordUser=?  where idUser=?', [passwordUser, idUser]);
+        const hashedPass= await hashPassword(passwordUser);
+        console.log(hashedPass);
+        const query = await db.query('update users set passwordUser=?  where idUser=?', [hashedPass, idUser]);
 
         if (query[0]['affectedRows'] > 0) {
             res.status(200).json({ success: true, statusCode: 200, message: 'password Updated successfully' });
@@ -163,6 +178,7 @@ const updatePasswordUser = async (req, res) => {
             })
         }
     } catch (error) {
+        console.log(error)
         res.status(404).json({
             success: false,
             statusCode: 404,
@@ -181,24 +197,24 @@ const deleteUser = async (req, res) => {
 
             return res.status(200).json({ success: true, statusCode: 200, message: 'تم الحذف بنجاح' });
         }
-        return  res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message:'خطأ في الإتصال'
-            })
+        return res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: 'خطأ في الإتصال'
+        })
     } catch (error) {
         if (error.code == 'ER_ROW_IS_REFERENCED_2') {
-           return res.status(404).json({
+            return res.status(404).json({
                 success: false,
                 statusCode: 404,
                 message: 'user is referenced ...',
             });
         }
-      return   res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        return res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 }
 const isActiveUser = async (req, res) => {
@@ -217,13 +233,13 @@ const isActiveUser = async (req, res) => {
 
             })
         }
-       return res.status(200).json({ success: true, statusCode: 200, data: user[0] })
+        return res.status(200).json({ success: true, statusCode: 200, data: user[0] })
     } catch (error) {
-         res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: '... خطأ في الإتصال'
-            })
+        res.status(404).json({
+            success: false,
+            statusCode: 404,
+            message: '... خطأ في الإتصال'
+        })
     }
 
 
