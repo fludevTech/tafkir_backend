@@ -1,6 +1,7 @@
 const db = require('../config/db')
 
 const {hashPassword} = require('../utils/auth_utils')
+const bcrypt = require('bcrypt');
 
 const getUsers = async (req, res) => {
 
