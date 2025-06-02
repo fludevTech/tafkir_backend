@@ -1,11 +1,15 @@
-// firebaseConfig.js
+
+require('dotenv').config();
 const admin = require('firebase-admin');
-const serviceAccount = require('../bekkai-emballage-firebase-adminsdk-eb0ef-25c3a07a96.json');
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'bekkai-emballage.appspot.com',
-});
+  credential: admin.credential.cert({
+    projectId:process.env.PROJECT_ID,
+    clientEmail:process.env.CLIENT_EMAIL,
+    privateKey:process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
 
+  }),
+  storageBucket: process.env.STORAGE_BUCKET,
+});
 const bucket = admin.storage().bucket();
 module.exports = bucket;
