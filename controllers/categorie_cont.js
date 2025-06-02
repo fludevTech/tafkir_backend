@@ -4,12 +4,7 @@ const getCategories = async (req, res) => {
 
     try {
         const Categories = await db.query('select * from categories');
-        if (Categories[0].length == 0) {
-            return res.status(404).json({
-                success: false,
-                statusCode: 404,
-            })
-        }
+       
         res.json({ success: true, statusCode: 200, data: Categories[0] })
     } catch (error) {
         res.status(404).json({

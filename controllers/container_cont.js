@@ -169,7 +169,7 @@ const deleteContainerProduct = async (req, res) => {
         return res.status(404).json({
             success: false,
             statusCode: 404,
-            message: 'خطأ في الإتصال'
+            message:'خطأ في تحديث المنتج' ,
         })
     } catch (error) {
         res.status(404).json({

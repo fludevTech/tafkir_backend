@@ -4,13 +4,7 @@ const getWilaya = async (req, res) => {
 
     try {
         const wilaya = await db.query('select * from wilaya');
-        // if (wilaya[0].length == 0) {
-        //     return res.status(404).json({
-        //         success: false,
-        //         statusCode: 404,
-
-        //     })
-        // }
+      
         res.json({ success: true, statusCode: 200, data: wilaya[0] })
     } catch (error) {
         res.status(404).json({

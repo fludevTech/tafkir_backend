@@ -9,6 +9,8 @@ const commandeRouter = require('./router/commande_router');
 const categorieRouter = require('./router/categorie_router');
 const containerRouter = require('./router/container_router');
 const productsRouter = require('./router/products_router');
+const imagesRouter = require('./router/images_router');
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -22,10 +24,11 @@ app.use('/commands', commandeRouter);
 app.use('/categories', categorieRouter);
 app.use('/containers', containerRouter);
 app.use('/products', productsRouter);
-  app.get('/', (req, res) => {
-        const responce = { statuscode: res.statusCode, message: 'Api Works' };
-        res.json(responce);
-    });
+app.use('/images', imagesRouter);
+
+
+
+
 mySqlPool.query('select 1').then(() => {
     console.log('mysql db connected elhamdolillah');
     app.listen(port, () => {

@@ -1,6 +1,6 @@
 const db = require('../config/db')
 
-const {hashPassword} = require('../utils/auth_utils')
+const { hashPassword } = require('../utils/auth_utils')
 const bcrypt = require('bcrypt');
 
 const getUsers = async (req, res) => {
@@ -15,14 +15,7 @@ const getUsers = async (req, res) => {
              order by wilaya.labelWilaya ASC
              `
         );
-        if (users[0].length == 0) {
-            return res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: 'No user exists',
 
-            })
-        }
         res.status(200).json({ success: true, statusCode: 200, data: users[0] })
     } catch (error) {
         res.status(404).json({
@@ -47,14 +40,7 @@ const userDetailes = async (req, res) => {
              where idUser=?
              `
             , [idUser]);
-        if (user[0].length == 0) {
-            return res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: 'No user exists',
 
-            })
-        }
         res.status(200).json({ success: true, statusCode: 200, data: user[0] })
     } catch (error) {
         res.status(404).json({
@@ -96,7 +82,6 @@ const loginUser = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log(error);
         res.status(404).json({
             success: false,
             statusCode: 404,
@@ -110,11 +95,11 @@ const loginUser = async (req, res) => {
 const addUser = async (req, res) => {
     const { idUser, emailUser, passwordUser, userName, isActive, idWilaya, idRole } = req.body;
     try {
-        
-        const hashedPass= await hashPassword(passwordUser);
+
+        const hashedPass = await hashPassword(passwordUser);
         const query = await db.query('insert into users (idUser,emailUser,passwordUser,UserName,isActive,idWilaya,idRole) VALUES (?,?,?,?,?,?,?)', [idUser, emailUser, hashedPass, userName, isActive, idWilaya, idRole]);
         if (query[0]['affectedRows'] > 0) {
-             res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
+            res.status(200).json({ success: true, statusCode: 200, message: 'تمت الإضافة بنجاح' });
 
         } else {
             res.status(404).json({
@@ -127,7 +112,7 @@ const addUser = async (req, res) => {
         if (error.code === 'ER_DUP_ENTRY') {
             return res.status(404).json({ success: false, statusCode: 404, error: 'Email already exists' });
         }
-       return res.status(404).json({
+        return res.status(404).json({
             success: false,
             statusCode: 404,
             message: '... خطأ في الإتصال'
@@ -143,7 +128,7 @@ const updateUser = async (req, res) => {
         const query = await db.query('update users set emailUser=?,userName=?,isActive=?,idWilaya=?,idRole=?  where idUser=?', [emailUser, userName, isActive, idWilaya, idRole, idUser]);
         if (query[0]['affectedRows'] > 0) {
 
-            res.status(200).json({ success: true, statusCode: 200, message: 'user Updated successfully' });
+            res.status(200).json({ success: true, statusCode: 200, message: 'تم التحديث بنجاح' });
 
         } else {
             res.status(404).json({
@@ -165,8 +150,7 @@ const updateUser = async (req, res) => {
 const updatePasswordUser = async (req, res) => {
     const { idUser, passwordUser } = req.body;
     try {
-        const hashedPass= await hashPassword(passwordUser);
-        console.log(hashedPass);
+        const hashedPass = await hashPassword(passwordUser);
         const query = await db.query('update users set passwordUser=?  where idUser=?', [hashedPass, idUser]);
 
         if (query[0]['affectedRows'] > 0) {
@@ -180,7 +164,6 @@ const updatePasswordUser = async (req, res) => {
             })
         }
     } catch (error) {
-        console.log(error)
         res.status(404).json({
             success: false,
             statusCode: 404,
@@ -227,14 +210,7 @@ const isActiveUser = async (req, res) => {
              where idUser=?
              `
             , [idUser]);
-        if (user[0].length == 0) {
-            return res.status(404).json({
-                success: false,
-                statusCode: 404,
-                message: 'No user exists',
 
-            })
-        }
         return res.status(200).json({ success: true, statusCode: 200, data: user[0] })
     } catch (error) {
         res.status(404).json({

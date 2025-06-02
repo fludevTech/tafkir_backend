@@ -30,14 +30,7 @@ const getStorsWilaya = async (req, res) => {
             on store.idWilaya = wilaya.idWilaya
             order by wilaya.labelWilaya ASC
             `);
-        // if (store[0].length == 0) {
-        //     return res.status(404).json({
-        //         success: false,
-        //         statusCode: 404,
-        //         message: "no store Exist"
-
-        //     })
-        // }
+      
         res.json({ success: true, statusCode: 200, data: store[0] })
     } catch (error) {
 

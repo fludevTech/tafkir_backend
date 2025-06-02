@@ -13,7 +13,12 @@
     "body-parser": "^2.2.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
+    "fs": "^0.0.1-security",
+    "multer": "^2.0.0",
     "mysql2": "^3.14.1",
-    "nodemon": "^3.1.10"
+    "mysqldump": "^3.2.0",
+    "nodemon": "^3.1.10",
+    "path": "^0.12.7"
   }
 }
