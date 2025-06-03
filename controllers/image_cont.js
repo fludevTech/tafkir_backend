@@ -1,4 +1,3 @@
-const multer = require('multer');
 const bucket = require('../config/firebase_config');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -25,6 +24,7 @@ const uploadImage = async (req, res) => {
     res.status(200).json({ success: true, statusCode: 200, data: publicUrl });
     fs.unlinkSync(filePath);
   } catch (error) {
+    console.log(error);
     fs.unlinkSync(filePath);
     res.status(404).json({
       success: false,
@@ -41,6 +41,7 @@ const deleteImageProduct = async (req, res) => {
     await bucket.file(imagePath).delete();
     res.status(200).json({ success: true, statusCode: 200, message: 'تم الحذف بنجاح' });
   } catch (error) {
+    console.log(error);
     res.status(404).json({
       success: false,
       statusCode: 404,

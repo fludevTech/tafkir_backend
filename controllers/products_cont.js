@@ -97,6 +97,7 @@ const deleteProduct = async (req, res) => {
             message: 'خطأ في الإتصال'
         })
     } catch (error) {
+        console.log(error)
         if (error.code === 'ER_ROW_IS_REFERENCED_2') {
 
             return res.status(404).json({
