@@ -1,7 +1,6 @@
 
 require('dotenv').config();
 const admin = require('firebase-admin');
-const serveiceAcount = require('../bek_emb1.json')
 console.log(process.env.PRIVATE_KEY.replace(/\\n/g, '\n'));
 admin.initializeApp({
   credential: admin.credential.cert({
